@@ -58,7 +58,13 @@ func HandleFuncStripped(prefix string, function http.HandlerFunc) {
 	http.Handle(prefix, http.StripPrefix(prefix, http.HandlerFunc(function)))
 }
 
+// Starts listening for connections on the given port, on all interfaces.
+// This is a blocking call.
+func Start(port string) {
+	panic(http.ListenAndServe(":"+port, nil))
+}
+
 func main() {
 	ServeDir(".")
-	panic(http.ListenAndServe(":8080", nil))
+	Start("8080")
 }
