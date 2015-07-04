@@ -69,6 +69,9 @@ func ServeDir(dirPath string) {
 //
 // GET /call/value -> prints "value"
 func HandleFuncStripped(prefix string, function http.HandlerFunc) {
+    if !strings.HasSuffix(prefix, "/") {
+        prefix += "/"
+    }
 	http.Handle(prefix, http.StripPrefix(prefix, http.HandlerFunc(function)))
 }
 
