@@ -2,7 +2,9 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"path"
+	"strings"
 )
 
 // When a client requests the root path "/", serve the given file.
@@ -25,11 +27,21 @@ func ServeFile(filePath string) {
 	})
 }
 
-// Allow clients to request any file from the given directory.
+// Allow clients to request any file from the given directory. Does *NOT* allow
+// directory listing.
 //
 // Ex: ServeDir("images") allows GET /images/cat.jpg
 func ServeDir(dirPath string) {
-	http.Handle(path.Clean("/"+dirPath), http.FileServer(http.Dir(dirPath)))
+	// In case the user passes something like ".".
+	cleanPath := path.Clean("/" + dirPath)
+	http.HandleFunc(cleanPath, func(w http.ResponseWriter, r *http.Request) {
+		p := path.Clean(strings.TrimPrefix(r.URL.Path, "/"))
+		if f, err := os.Stat(p); err != nil || f.IsDir() {
+			http.NotFound(w, r)
+		} else {
+			http.ServeFile(w, r, p)
+		}
+	})
 }
 
 // Calls the given function when the client path starts with 'prefix', but
