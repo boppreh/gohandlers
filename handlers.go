@@ -47,7 +47,7 @@ func ServeFile(filePath string) {
 // Ex: ServeDir("images") allows GET /images/cat.jpg
 func ServeDir(dirPath string) {
 	// In case the user passes something like ".".
-	cleanPath := path.Clean("/" + dirPath) + "/"
+	cleanPath := path.Clean("/"+dirPath) + "/"
 	http.HandleFunc(cleanPath, func(w http.ResponseWriter, r *http.Request) {
 		p := path.Clean(strings.TrimPrefix(r.URL.Path, "/"))
 		if f, err := os.Stat(p); err != nil || f.IsDir() {
