@@ -69,10 +69,17 @@ func ServeDir(dirPath string) {
 //
 // GET /call/value -> prints "value"
 func HandleFuncStripped(prefix string, function http.HandlerFunc) {
-    if !strings.HasSuffix(prefix, "/") {
-        prefix += "/"
-    }
+	if !strings.HasSuffix(prefix, "/") {
+		prefix += "/"
+	}
 	http.Handle(prefix, http.StripPrefix(prefix, http.HandlerFunc(function)))
+}
+
+// Represents an uploaded file, with a path (where the content was saved with a
+// random name) and the original filename as sent by the client.
+type Upload struct {
+	path string
+	name string
 }
 
 // Allow users to POST files to the given URL path, saving these uploaded files
@@ -83,7 +90,7 @@ func HandleFuncStripped(prefix string, function http.HandlerFunc) {
 //
 // The 'savedPath' retains the extension from 'originalFilename', but with a
 // random name to avoid conflicts.
-func AllowUpload(urlPath, formKey, storageDir string, callback func(string, string)) {
+func AllowUpload(urlPath, formKey, storageDir string, callback func(Upload)) {
 	http.HandleFunc(urlPath, func(w http.ResponseWriter, r *http.Request) {
 		infile, header, err := r.FormFile(formKey)
 		if err != nil {
@@ -106,7 +113,7 @@ func AllowUpload(urlPath, formKey, storageDir string, callback func(string, stri
 			return
 		}
 
-		callback(storagePath, originalFilename)
+		callback(Upload{storagePath, originalFilename})
 	})
 }
 
