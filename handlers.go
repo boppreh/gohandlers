@@ -78,8 +78,8 @@ func HandleFuncStripped(prefix string, function http.HandlerFunc) {
 // Represents an uploaded file, with a path (where the content was saved with a
 // random name) and the original filename as sent by the client.
 type Upload struct {
-	path string
-	name string
+	Path string
+	Name string
 }
 
 // Allow users to POST files to the given URL path, saving these uploaded files
